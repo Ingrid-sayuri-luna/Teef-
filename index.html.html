@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>TEEF · Provas Práticas</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--gold:#F5C518;--pink:#FF6B9D;--pink-dim:#cc4a78;--pink-bg:#2a0f1a;--dark:#0e0e0e;--mid:#181818;--card:#202020;--border:#2e2e2e;--text:#f5f0ea;--muted:#777;--green:#4ade80;--red:#f87171;--orange:#fb923c;}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{background:var(--dark);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;}
+header{background:#0e0e0e;padding:18px 20px 16px;border-bottom:2px solid var(--gold);display:flex;align-items:center;gap:14px;}
+.hstripe{width:5px;height:44px;background:linear-gradient(180deg,var(--gold) 50%,var(--pink) 50%);border-radius:3px;flex-shrink:0;}
+header h1{font-family:'Bebas Neue',sans-serif;font-size:1.9rem;color:var(--gold);letter-spacing:3px;line-height:1;}
+header p{font-size:.68rem;font-weight:500;color:var(--pink);letter-spacing:1.5px;text-transform:uppercase;margin-top:3px;}
+.tabs{display:flex;background:var(--mid);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10;}
+.tab{flex:1;padding:13px 8px;text-align:center;cursor:pointer;font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--muted);border-bottom:3px solid transparent;transition:color .2s,border-color .2s;}
+.tab.active{color:var(--gold);border-bottom-color:var(--gold);}
+.panel{display:none;padding:16px 16px 70px;}
+.panel.active{display:block;}
+.stitle{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:2px;color:var(--pink);}
+.ssub{font-size:.72rem;color:var(--muted);margin:3px 0 14px;}
+.legend{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:14px;}
+.li{display:flex;align-items:center;gap:5px;font-size:.68rem;color:var(--muted);}
+.dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.slist{display:flex;flex-direction:column;gap:7px;}
+.sc{background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px;transition:border-color .15s;cursor:pointer;}
+.sc.free:hover{border-color:var(--pink);}
+.sc.free:active{opacity:.75;}
+.sc.taken{border-color:var(--red);cursor:default;}
+.sc.locking{border-color:var(--orange);cursor:default;}
+.stime{font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:1px;color:var(--gold);min-width:96px;flex-shrink:0;}
+.sbody{flex:1;overflow:hidden;}
+.snames{font-size:.82rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.shint{font-size:.68rem;color:var(--muted);margin-top:1px;}
+.badge{font-size:.6rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:3px 8px;border-radius:20px;flex-shrink:0;}
+.badge.free{background:#1a2e1a;color:var(--green);}
+.badge.taken{background:#2e1a1a;color:var(--red);}
+.badge.lock{background:#2e1f10;color:var(--orange);}
+.badge.pink{background:var(--pink-bg);color:var(--pink);}
+.gc{background:var(--card);border:1.5px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px;}
+.gc.full{opacity:.7;}
+.gh{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;}
+.gtitle{font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:1px;color:var(--gold);}
+.gcollab{font-size:.67rem;color:var(--muted);margin-top:2px;}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;}
+.chip{background:var(--pink-bg);border:1px solid #4a1a2e;border-radius:20px;padding:4px 10px;font-size:.72rem;color:var(--pink);display:flex;align-items:center;gap:5px;}
+.chip.empty{background:transparent;border:1px dashed var(--border);color:var(--muted);font-style:italic;}
+.chipx{background:none;border:none;color:#f8717188;font-size:.75rem;cursor:pointer;padding:0;line-height:1;font-family:inherit;}
+.chipx:hover{color:var(--red);}
+.join-btn{background:transparent;border:1.5px dashed var(--pink-dim);border-radius:20px;padding:4px 12px;font-size:.72rem;color:var(--pink);cursor:pointer;font-family:'DM Sans',sans-serif;}
+.close-btn{background:transparent;border:1.5px dashed var(--red);border-radius:20px;padding:4px 12px;font-size:.68rem;color:var(--red);cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:6px;}
+.open-btn{background:transparent;border:1.5px dashed var(--green);border-radius:20px;padding:4px 12px;font-size:.68rem;color:var(--green);cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:6px;}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;align-items:flex-end;justify-content:center;}
+.overlay.open{display:flex;}
+.modal{background:var(--mid);border:1px solid var(--border);border-top:2px solid var(--pink);border-radius:20px 20px 0 0;padding:22px 20px 36px;width:100%;max-width:500px;animation:su .22s ease;}
+@keyframes su{from{transform:translateY(50px);opacity:0;}to{transform:none;opacity:1;}}
+.modal h3{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:2px;color:var(--pink);margin-bottom:4px;}
+.modal p{font-size:.78rem;color:var(--muted);margin-bottom:16px;}
+.field{margin-bottom:12px;}
+.field label{display:block;font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:6px;}
+.field input{width:100%;background:var(--card);border:1.5px solid var(--border);border-radius:8px;padding:11px 14px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.92rem;outline:none;-webkit-appearance:none;}
+.field input:focus{border-color:var(--pink);}
+.btn{display:block;width:100%;padding:13px;border-radius:9px;border:none;font-family:'Bebas Neue',sans-serif;font-size:1.05rem;letter-spacing:2px;cursor:pointer;margin-top:8px;}
+.btn-main{background:linear-gradient(135deg,var(--gold) 0%,var(--pink) 100%);color:#111;font-weight:700;}
+.btn-ghost{background:transparent;color:var(--muted);border:1.5px solid var(--border);}
+.loading{text-align:center;padding:40px 20px;color:var(--muted);font-size:.82rem;}
+.spinner{width:28px;height:28px;border:2px solid var(--border);border-top-color:var(--pink);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--card);border:1px solid var(--border);border-radius:10px;padding:11px 20px;font-size:.8rem;font-weight:500;z-index:200;transition:transform .28s ease;white-space:nowrap;pointer-events:none;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+.toast.ok{border-color:var(--green);color:var(--green);}
+.toast.err{border-color:var(--red);color:var(--red);}
+.toast.inf{border-color:var(--pink);color:var(--pink);}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hstripe"></div>
+  <div>
+    <h1>TEEF · Provas Práticas</h1>
+    <p>Inscrição de Horários · 1ª Época</p>
+  </div>
+</header>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('p')">💪 Prescrição</div>
+  <div class="tab" onclick="switchTab('o')">🌳 Outdoor</div>
+</div>
+
+<div id="panel-p" class="panel active">
+  <div class="stitle">Avaliação &amp; Prescrição</div>
+  <div class="ssub">Duplas · 10 min por slot · Toca num horário livre para te inscreveres</div>
+  <div class="legend">
+    <div class="li"><div class="dot" style="background:var(--green)"></div>Livre</div>
+    <div class="li"><div class="dot" style="background:var(--red)"></div>Ocupado</div>
+    <div class="li"><div class="dot" style="background:var(--orange)"></div>A reservar…</div>
+  </div>
+  <div class="slist" id="list-p"><div class="loading"><div class="spinner"></div>A carregar…</div></div>
+</div>
+
+<div id="panel-o" class="panel">
+  <div class="stitle">Outdoor Fitness</div>
+  <div class="ssub">Grupos de 3–5 · 12 grupos disponíveis</div>
+  <div class="legend">
+    <div class="li"><div class="dot" style="background:var(--green)"></div>Com vaga</div>
+    <div class="li"><div class="dot" style="background:var(--red)"></div>Cheio/Fechado</div>
+  </div>
+  <div id="list-o"><div class="loading"><div class="spinner"></div>A carregar…</div></div>
+</div>
+
+<div class="overlay" id="ov-p">
+  <div class="modal">
+    <h3 id="m-slabel">Slot</h3>
+    <p>Insere os nomes dos dois elementos da dupla</p>
+    <div class="field"><label>Pessoa 1</label><input id="m-p1" type="text" placeholder="Nome completo…" maxlength="40" autocomplete="off"></div>
+    <div class="field"><label>Pessoa 2</label><input id="m-p2" type="text" placeholder="Nome completo…" maxlength="40" autocomplete="off"></div>
+    <button class="btn btn-main" onclick="confirmP()">✔ Confirmar Inscrição</button>
+    <button class="btn btn-ghost" onclick="closeOv('ov-p')">Cancelar</button>
+  </div>
+</div>
+
+<div class="overlay" id="ov-o">
+  <div class="modal">
+    <h3 id="m-glabel">Grupo</h3>
+    <p id="m-ginfo">Insere o teu nome</p>
+    <div class="field"><label>O teu nome</label><input id="m-oname" type="text" placeholder="Nome completo…" maxlength="40" autocomplete="off"></div>
+    <button class="btn btn-main" onclick="confirmO()">✔ Entrar no Grupo</button>
+    <button class="btn btn-ghost" onclick="closeOv('ov-o')">Cancelar</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const URL_ = 'https://pjsfwwknxhdufixtckxt.supabase.co';
+const KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBqc2Z3d2tueGhkdWZpeHRja3h0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc3MjI4ODAsImV4cCI6MjA5MzI5ODg4MH0.u8hg3b6LX5B7ZtH_Dd3pzJrrVuBrCCioq27eWD3wb-o';
+const SID  = Math.random().toString(36).slice(2,10);
+
+function pad(n){return String(n).padStart(2,'0');}
+const SLOTS=(()=>{const s=[];let h=18,m=30;while(!(h===22&&m===30)){const f=`${pad(h)}h${pad(m)}`;m+=10;if(m>=60){m-=60;h++;}s.push({id:f,label:`${f} – ${pad(h)}h${pad(m)}`});}return s;})();
+
+const GROUPS=[
+  {id:'g1', name:'Grupo 1', time:'9h20–9h50',   collab:'Grupos 2 e 3 colaboram',  max:5},
+  {id:'g2', name:'Grupo 2', time:'10h00–10h30',  collab:'Grupos 1 e 3 colaboram',  max:5},
+  {id:'g3', name:'Grupo 3', time:'10h40–11h10',  collab:'Grupos 1 e 2 colaboram',  max:5},
+  {id:'g4', name:'Grupo 4', time:'11h20–11h50',  collab:'Grupos 5 e 6 colaboram',  max:5},
+  {id:'g5', name:'Grupo 5', time:'12h10–12h50',  collab:'Grupos 4 e 6 colaboram',  max:5},
+  {id:'g6', name:'Grupo 6', time:'13h00–13h30',  collab:'Grupos 4 e 5 colaboram',  max:5},
+  {id:'g7', name:'Grupo 7', time:'13h40–14h10',  collab:'Grupos 7 e 8 colaboram',  max:5},
+  {id:'g8', name:'Grupo 8', time:'14h20–14h50',  collab:'Grupos 7 e 8 colaboram',  max:5},
+  {id:'g9', name:'Grupo 9', time:'15h00–15h30',  collab:'Grupos 9 e 10 colaboram', max:5},
+  {id:'g10',name:'Grupo 10',time:'15h40–16h10',  collab:'Grupos 9 e 10 colaboram', max:5},
+  {id:'g11',name:'Grupo 11',time:'16h20–16h50',  collab:'Grupos 11 e 12 colaboram',max:5},
+  {id:'g12',name:'Grupo 12',time:'17h00–17h30',  collab:'Grupos 11 e 12 colaboram',max:5},
+];
+
+async function api(method,table,body,params=''){
+  const r=await fetch(`${URL_}/rest/v1/${table}${params}`,{
+    method,
+    headers:{'apikey':KEY,'Authorization':'Bearer '+KEY,'Content-Type':'application/json','Prefer':method==='POST'?'return=representation':'return=minimal'},
+    body:body?JSON.stringify(body):undefined
+  });
+  try{return await r.json();}catch{return null;}
+}
+const dbGet=(t,p)=>api('GET',t,null,p);
+const dbPost=(t,b)=>api('POST',t,b);
+const dbDel=(t,p)=>api('DELETE',t,null,p);
+
+let P={},O={},CL={};
+let selSlot=null,selGrp=null,lockTmr=null;
+
+async function loadAll(){
+  const [presc,outdoor,closed]=await Promise.all([
+    dbGet('inscricoes_prescricao','?select=*'),
+    dbGet('inscricoes_outdoor','?select=*'),
+    dbGet('grupos_fechados','?select=*'),
+  ]);
+  P={};
+  (presc||[]).forEach(r=>{P[r.slot_id]={p1:r.p1,p2:r.p2};});
+  O={};
+  GROUPS.forEach(g=>{O[g.id]=[];});
+  (outdoor||[]).forEach(r=>{if(!O[r.grupo_id])O[r.grupo_id]=[];O[r.grupo_id].push({name:r.nome,id:r.id});});
+  CL={};
+  (closed||[]).forEach(r=>{CL[r.grupo_id]=true;});
+}
+
+function renderP(){
+  const c=document.getElementById('list-p');
+  c.innerHTML='';
+  SLOTS.forEach(slot=>{
+    const taken=P[slot.id];
+    const div=document.createElement('div');
+    if(taken){
+      div.className='sc taken';
+      div.innerHTML=`<div class="stime">${slot.label}</div><div class="sbody"><div class="snames">${esc(taken.p1)} &amp; ${esc(taken.p2)}</div></div><button class="chipx" style="font-size:1rem;padding:4px 8px" onclick="deleteP('${slot.id}')">✕</button>`;
+    } else {
+      div.className='sc free';
+      div.innerHTML=`<div class="stime">${slot.label}</div><div class="sbody"><div class="shint">Toca para reservar</div></div><span class="badge free">Livre</span>`;
+      div.onclick=()=>openP(slot);
+    }
+    c.appendChild(div);
+  });
+}
+
+async function deleteP(slotId){
+  if(!confirm('Libertar este horário? A dupla terá de se inscrever novamente.'))return;
+  await dbDel('inscricoes_prescricao',`?slot_id=eq.${slotId}`);
+  delete P[slotId];
+  toast('Horário libertado ✓','ok');
+  renderP();
+}
+
+async function openP(slot){
+  selSlot=slot;
+  document.getElementById('m-slabel').textContent=slot.label;
+  document.getElementById('m-p1').value='';
+  document.getElementById('m-p2').value='';
+  document.getElementById('ov-p').classList.add('open');
+  clearTimeout(lockTmr);
+  lockTmr=setTimeout(()=>closeOv('ov-p'),30000);
+}
+
+async function confirmP(){
+  const p1=document.getElementById('m-p1').value.trim();
+  const p2=document.getElementById('m-p2').value.trim();
+  if(!p1||!p2){toast('Preenche os dois nomes!','err');return;}
+  clearTimeout(lockTmr);
+  const existing=await dbGet('inscricoes_prescricao',`?slot_id=eq.${selSlot.id}&select=slot_id`);
+  if(existing&&existing.length>0){toast('Slot já ocupado! Escolhe outro.','err');closeOv('ov-p');await refresh();return;}
+  await dbPost('inscricoes_prescricao',{slot_id:selSlot.id,p1,p2});
+  P[selSlot.id]={p1,p2};
+  closeOv('ov-p');
+  toast(selSlot.label+' reservado! ✓','ok');
+  renderP();
+}
+
+function renderO(){
+  const c=document.getElementById('list-o');
+  c.innerHTML='';
+  GROUPS.forEach(g=>{
+    const members=O[g.id]||[];
+    const closed=CL[g.id]||false;
+    const full=members.length>=g.max||closed;
+    const div=document.createElement('div');
+    div.className='gc'+(full?' full':'');
+    const chips=Array.from({length:g.max},(_,i)=>{
+      if(members[i]){
+        const m=members[i];
+        return `<span class="chip">${esc(m.name)}<button class="chipx" onclick="removeO(${m.id},'${g.id}')">✕</button></span>`;
+      }
+      return `<span class="chip empty">${closed?'—':'vaga livre'}</span>`;
+    }).join('');
+    const actionBtn=closed
+      ?`<button class="open-btn" onclick="openGroup('${g.id}')">🔓 Reabrir grupo</button>`
+      :members.length>0?`<button class="close-btn" onclick="closeGroup('${g.id}')">🔒 Fechar grupo</button>`:'';
+    div.innerHTML=`
+      <div class="gh">
+        <div><div class="gtitle">${g.name} · ${g.time}</div><div class="gcollab">${g.collab}</div></div>
+        <span class="badge ${closed?'taken':full?'taken':'pink'}">${closed?'Fechado':members.length+'/'+g.max}</span>
+      </div>
+      <div class="chips">${chips}${!full?`<button class="join-btn" onclick="openO('${g.id}')">+ Entrar</button>`:''}</div>
+      ${actionBtn}`;
+    c.appendChild(div);
+  });
+}
+
+function openO(gid){
+  selGrp=gid;
+  const g=GROUPS.find(x=>x.id===gid),members=O[gid]||[];
+  document.getElementById('m-glabel').textContent=`${g.name} · ${g.time}`;
+  document.getElementById('m-ginfo').textContent=`${members.length}/${g.max} inscritos · Insere o teu nome`;
+  document.getElementById('m-oname').value='';
+  document.getElementById('ov-o').classList.add('open');
+}
+
+async function confirmO(){
+  const name=document.getElementById('m-oname').value.trim();
+  if(!name){toast('Insere o teu nome!','err');return;}
+  const g=GROUPS.find(x=>x.id===selGrp);
+  const members=O[selGrp]||[];
+  if(members.length>=g.max){toast('Grupo já cheio!','err');closeOv('ov-o');return;}
+  if(members.map(m=>m.name.toLowerCase()).includes(name.toLowerCase())){toast('Nome já inscrito!','err');return;}
+  const res=await dbPost('inscricoes_outdoor',{grupo_id:selGrp,nome:name});
+  O[selGrp].push({name,id:res&&res[0]?res[0].id:null});
+  closeOv('ov-o');
+  toast(`Inscrito no ${g.name}! ✓`,'ok');
+  renderO();
+}
+
+async function removeO(id,gid){
+  if(!confirm('Remover este nome do grupo?'))return;
+  await dbDel('inscricoes_outdoor',`?id=eq.${id}`);
+  O[gid]=(O[gid]||[]).filter(m=>m.id!==id);
+  toast('Removido ✓','inf');
+  renderO();
+}
+
+async function closeGroup(gid){
+  if(!confirm('Fechar este grupo? Ninguém mais poderá entrar.'))return;
+  await dbPost('grupos_fechados',{grupo_id:gid});
+  CL[gid]=true;
+  toast('Grupo fechado 🔒','inf');
+  renderO();
+}
+
+async function openGroup(gid){
+  if(!confirm('Reabrir este grupo?'))return;
+  await dbDel('grupos_fechados',`?grupo_id=eq.${gid}`);
+  delete CL[gid];
+  toast('Grupo reaberto 🔓','ok');
+  renderO();
+}
+
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+function closeOv(id){
+  document.getElementById(id).classList.remove('open');
+  clearTimeout(lockTmr);
+  selSlot=null;selGrp=null;
+}
+
+function switchTab(t){
+  document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('active',['p','o'][i]===t));
+  document.getElementById('panel-p').classList.toggle('active',t==='p');
+  document.getElementById('panel-o').classList.toggle('active',t==='o');
+}
+
+let toastTmr;
+function toast(msg,type){
+  const el=document.getElementById('toast');
+  el.textContent=msg;el.className=`toast ${type} show`;
+  clearTimeout(toastTmr);toastTmr=setTimeout(()=>el.classList.remove('show'),3000);
+}
+
+async function refresh(){await loadAll();renderP();renderO();}
+
+(async()=>{await loadAll();renderP();renderO();})();
+setInterval(refresh,5000);
+</script>
+</body>
+</html>
