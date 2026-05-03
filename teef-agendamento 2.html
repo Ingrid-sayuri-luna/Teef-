@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>TEEF · Provas Práticas</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --gold: #F5C518;
+  --gold-dim: #c49a10;
+  --pink: #FF6B9D;
+  --pink-dim: #cc4a78;
+  --pink-bg: #2a0f1a;
+  --dark: #0e0e0e;
+  --mid: #181818;
+  --card: #202020;
+  --border: #2e2e2e;
+  --text: #f5f0ea;
+  --muted: #777;
+  --green: #4ade80;
+  --red: #f87171;
+  --orange: #fb923c;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+body { background: var(--dark); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+
+header {
+  background: #0e0e0e;
+  padding: 18px 20px 16px;
+  border-bottom: 2px solid var(--gold);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.header-stripe {
+  width: 5px; height: 44px;
+  background: linear-gradient(180deg, var(--gold) 50%, var(--pink) 50%);
+  border-radius: 3px; flex-shrink: 0;
+}
+header h1 { font-family: 'Bebas Neue', sans-serif; font-size: 1.9rem; color: var(--gold); letter-spacing: 3px; line-height: 1; }
+header p { font-size: 0.68rem; font-weight: 500; color: var(--pink); letter-spacing: 1.5px; text-transform: uppercase; margin-top: 3px; }
+
+.tabs { display: flex; background: var(--mid); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 10; }
+.tab { flex: 1; padding: 13px 8px; text-align: center; cursor: pointer; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); border-bottom: 3px solid transparent; transition: color .2s, border-color .2s; }
+.tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+.panel { display: none; padding: 16px 16px 70px; }
+.panel.active { display: block; }
+.sec-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; letter-spacing: 2px; color: var(--pink); }
+.sec-sub { font-size: 0.72rem; color: var(--muted); margin: 3px 0 14px; }
+
+.legend { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 14px; }
+.legend-item { display: flex; align-items: center; gap: 5px; font-size: 0.68rem; color: var(--muted); }
+.dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+.slot-list { display: flex; flex-direction: column; gap: 7px; }
+.slot-card { background: var(--card); border: 1.5px solid var(--border); border-radius: 10px; padding: 12px 14px; display: flex; align-items: center; gap: 10px; transition: border-color .15s; cursor: pointer; }
+.slot-card.free:active { opacity: .75; }
+.slot-card.free:hover { border-color: var(--pink); }
+.slot-card.taken { border-color: var(--red); cursor: default; }
+.slot-card.locking { border-color: var(--orange); cursor: default; }
+.slot-time { font-family: 'Bebas Neue', sans-serif; font-size: 1rem; letter-spacing: 1px; color: var(--gold); min-width: 96px; flex-shrink: 0; }
+.slot-body { flex: 1; overflow: hidden; }
+.slot-names { font-size: 0.82rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.slot-hint { font-size: 0.68rem; color: var(--muted); margin-top: 1px; }
+.badge { font-size: 0.6rem; font-weight: 700; letter-spacing: .5px; text-transform: uppercase; padding: 3px 8px; border-radius: 20px; flex-shrink: 0; }
+.badge.free  { background: #1a2e1a; color: var(--green); }
+.badge.taken { background: #2e1a1a; color: var(--red); }
+.badge.lock  { background: #2e1f10; color: var(--orange); }
+.badge.pink  { background: var(--pink-bg); color: var(--pink); }
+
+.group-card { background: var(--card); border: 1.5px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 8px; }
+.group-card.full { opacity: .7; }
+.group-head { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 10px; }
+.group-title { font-family: 'Bebas Neue', sans-serif; font-size: 1rem; letter-spacing: 1px; color: var(--gold); }
+.group-collab { font-size: 0.67rem; color: var(--muted); margin-top: 2px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { background: var(--pink-bg); border: 1px solid #4a1a2e; border-radius: 20px; padding: 4px 10px; font-size: 0.72rem; color: var(--pink); display: flex; align-items: center; gap: 5px; }
+.chip.empty { background: transparent; border: 1px dashed var(--border); color: var(--muted); font-style: italic; }
+.chip-x { background: none; border: none; color: #f8717188; font-size: .75rem; cursor: pointer; padding: 0; line-height: 1; font-family: inherit; transition: color .15s; }
+.chip-x:hover { color: var(--red); }
+.join-btn { background: transparent; border: 1.5px dashed var(--pink-dim); border-radius: 20px; padding: 4px 12px; font-size: .72rem; color: var(--pink); cursor: pointer; font-family: 'DM Sans', sans-serif; }
+.close-grp-btn { background: transparent; border: 1.5px dashed var(--red); border-radius: 20px; padding: 4px 12px; font-size: .68rem; color: var(--red); cursor: pointer; font-family: 'DM Sans', sans-serif; margin-top: 4px; }
+.close-grp-btn:active { opacity: .6; }
+.join-btn:active { opacity: .6; }
+
+.overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.7); z-index: 100; align-items: flex-end; justify-content: center; }
+.overlay.open { display: flex; }
+.modal { background: var(--mid); border: 1px solid var(--border); border-top: 2px solid var(--pink); border-radius: 20px 20px 0 0; padding: 22px 20px 36px; width: 100%; max-width: 500px; animation: su .22s ease; }
+@keyframes su { from { transform: translateY(50px); opacity: 0; } to { transform: none; opacity: 1; } }
+.modal h3 { font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; letter-spacing: 2px; color: var(--pink); margin-bottom: 4px; }
+.modal p { font-size: .78rem; color: var(--muted); margin-bottom: 16px; }
+.field { margin-bottom: 12px; }
+.field label { display: block; font-size: .68rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 6px; }
+.field input { width: 100%; background: var(--card); border: 1.5px solid var(--border); border-radius: 8px; padding: 11px 14px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: .92rem; outline: none; -webkit-appearance: none; }
+.field input:focus { border-color: var(--pink); }
+.btn { display: block; width: 100%; padding: 13px; border-radius: 9px; border: none; font-family: 'Bebas Neue', sans-serif; font-size: 1.05rem; letter-spacing: 2px; cursor: pointer; margin-top: 8px; }
+.btn-main { background: linear-gradient(135deg, var(--gold) 0%, var(--pink) 100%); color: #111; font-weight: 700; }
+.btn-ghost { background: transparent; color: var(--muted); border: 1.5px solid var(--border); }
+
+.loading { text-align: center; padding: 40px 20px; color: var(--muted); font-size: .82rem; }
+.spinner { width: 28px; height: 28px; border: 2px solid var(--border); border-top-color: var(--pink); border-radius: 50%; animation: spin .8s linear infinite; margin: 0 auto 12px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 11px 20px; font-size: .8rem; font-weight: 500; z-index: 200; transition: transform .28s ease; white-space: nowrap; pointer-events: none; }
+.toast.show { transform: translateX(-50%) translateY(0); }
+.toast.ok  { border-color: var(--green); color: var(--green); }
+.toast.err { border-color: var(--red);   color: var(--red); }
+.toast.inf { border-color: var(--pink);  color: var(--pink); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-stripe"></div>
+  <div>
+    <h1>TEEF · Provas Práticas</h1>
+    <p>Inscrição de Horários · 1ª Época</p>
+  </div>
+</header>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('p')">💪 Prescrição</div>
+  <div class="tab" onclick="switchTab('o')">🌳 Outdoor</div>
+</div>
+
+<div id="panel-p" class="panel active">
+  <div class="sec-title">Avaliação &amp; Prescrição</div>
+  <div class="sec-sub">Duplas · 10 min por slot · Toca num horário livre para te inscreveres</div>
+  <div class="legend">
+    <div class="legend-item"><div class="dot" style="background:var(--green)"></div>Livre</div>
+    <div class="legend-item"><div class="dot" style="background:var(--red)"></div>Ocupado</div>
+    <div class="legend-item"><div class="dot" style="background:var(--orange)"></div>A reservar…</div>
+  </div>
+  <div class="slot-list" id="list-p"><div class="loading"><div class="spinner"></div>A carregar…</div></div>
+</div>
+
+<div id="panel-o" class="panel">
+  <div class="sec-title">Outdoor Fitness</div>
+  <div class="sec-sub">Grupos de 3–5 · 8 grupos disponíveis</div>
+  <div class="legend">
+    <div class="legend-item"><div class="dot" style="background:var(--green)"></div>Com vaga</div>
+    <div class="legend-item"><div class="dot" style="background:var(--red)"></div>Cheio</div>
+  </div>
+  <div id="list-o"><div class="loading"><div class="spinner"></div>A carregar…</div></div>
+</div>
+
+<!-- Modal Prescrição -->
+<div class="overlay" id="ov-p">
+  <div class="modal">
+    <h3 id="m-slabel">Slot</h3>
+    <p>Insere os nomes dos dois elementos da dupla</p>
+    <div class="field"><label>Pessoa 1</label><input id="m-p1" type="text" placeholder="Nome completo…" maxlength="40" autocomplete="off"></div>
+    <div class="field"><label>Pessoa 2</label><input id="m-p2" type="text" placeholder="Nome completo…" maxlength="40" autocomplete="off"></div>
+    <button class="btn btn-main" onclick="confirmP()">✔ Confirmar Inscrição</button>
+    <button class="btn btn-ghost" onclick="closeOv('ov-p')">Cancelar</button>
+  </div>
+</div>
+
+<!-- Modal Outdoor -->
+<div class="overlay" id="ov-o">
+  <div class="modal">
+    <h3 id="m-glabel">Grupo</h3>
+    <p id="m-ginfo">Insere o teu nome</p>
+    <div class="field"><label>O teu nome</label><input id="m-oname" type="text" placeholder="Nome completo…" maxlength="40" autocomplete="off"></div>
+    <button class="btn btn-main" onclick="confirmO()">✔ Entrar no Grupo</button>
+    <button class="btn btn-ghost" onclick="closeOv('ov-o')">Cancelar</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SUPA_URL = 'https://pjsfwwknxhdufixtckxt.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBqc2Z3d2tueGhkdWZpeHRja3h0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc3MjI4ODAsImV4cCI6MjA5MzI5ODg4MH0.u8hg3b6LX5B7ZtH_Dd3pzJrrVuBrCCioq27eWD3wb-o';
+const SID = Math.random().toString(36).slice(2, 10);
+
+function pad(n){return String(n).padStart(2,'0');}
+function buildSlots(){
+  const s=[];let h=18,m=30;
+  while(!(h===22&&m===30)){
+    const from=`${pad(h)}h${pad(m)}`;
+    m+=10;if(m>=60){m-=60;h++;}
+    s.push({id:from,label:`${from} – ${pad(h)}h${pad(m)}`});
+  }
+  return s;
+}
+const SLOTS = buildSlots();
+
+const GROUPS = [
+  {id:'g1', name:'Grupo 1', time:'9h20 – 9h50',   collab:'Grupos 2 e 3 colaboram',  max:5},
+  {id:'g2', name:'Grupo 2', time:'10h00 – 10h30',  collab:'Grupos 1 e 3 colaboram',  max:5},
+  {id:'g3', name:'Grupo 3', time:'10h40 – 11h10',  collab:'Grupos 1 e 2 colaboram',  max:5},
+  {id:'g4', name:'Grupo 4', time:'11h20 – 11h50',  collab:'Grupos 5 e 6 colaboram',  max:5},
+  {id:'g5', name:'Grupo 5', time:'12h10 – 12h50',  collab:'Grupos 4 e 6 colaboram',  max:5},
+  {id:'g6', name:'Grupo 6', time:'13h00 – 13h30',  collab:'Grupos 4 e 5 colaboram',  max:5},
+  {id:'g7', name:'Grupo 7', time:'13h40 – 14h10',  collab:'Grupos 7 e 8 colaboram',  max:5},
+  {id:'g8', name:'Grupo 8', time:'14h20 – 14h50',  collab:'Grupos 7 e 8 colaboram',  max:5},
+  {id:'g9', name:'Grupo 9', time:'15h00 – 15h30',  collab:'Grupos 9 e 10 colaboram', max:5},
+  {id:'g10',name:'Grupo 10',time:'15h40 – 16h10',  collab:'Grupos 9 e 10 colaboram', max:5},
+  {id:'g11',name:'Grupo 11',time:'16h20 – 16h50',  collab:'Grupos 11 e 12 colaboram',max:5},
+  {id:'g12',name:'Grupo 12',time:'17h00 – 17h30',  collab:'Grupos 11 e 12 colaboram',max:5},
+];
+
+// ── Supabase helpers ──────────────────────────────────────────────────────────
+async function db(method, table, body, params=''){
+  const url = `${SUPA_URL}/rest/v1/${table}${params}`;
+  const res = await fetch(url, {
+    method,
+    headers: {
+      'apikey': SUPA_KEY,
+      'Authorization': `Bearer ${SUPA_KEY}`,
+      'Content-Type': 'application/json',
+      'Prefer': method==='POST' ? 'return=representation' : 'return=minimal'
+    },
+    body: body ? JSON.stringify(body) : undefined
+  });
+  if(method==='DELETE' || (res.status===200||res.status===201||res.status===204)) {
+    try { return await res.json(); } catch { return null; }
+  }
+  const err = await res.text();
+  throw new Error(err);
+}
+
+const get  = (table, params='') => db('GET',    table, null, params);
+const post = (table, body)       => db('POST',   table, body);
+const del  = (table, params)     => db('DELETE', table, null, params);
+
+// ── State ─────────────────────────────────────────────────────────────────────
+let P = {}, O = {}, CLOSED = {};
+let selSlot=null, selGrp=null, lockTmr=null;
+
+async function loadAll(){
+  const [presc, outdoor, closedRows] = await Promise.all([
+    get('inscricoes_prescricao', '?select=*'),
+    get('inscricoes_outdoor',    '?select=*'),
+    get('grupos_fechados',       '?select=*'),
+  ]);
+  P = {};
+  (presc||[]).forEach(r => { P[r.slot_id] = {p1:r.p1, p2:r.p2}; });
+  O = {};
+  GROUPS.forEach(g => { O[g.id] = []; });
+  (outdoor||[]).forEach(r => {
+    if(!O[r.grupo_id]) O[r.grupo_id]=[];
+    O[r.grupo_id].push({name:r.nome, id:r.id});
+  });
+  CLOSED = {};
+  (closedRows||[]).forEach(r => { CLOSED[r.grupo_id] = true; });
+}
+
+// ── Locks (Supabase table) ────────────────────────────────────────────────────
+async function acquireLock(slotId){
+  // Clean expired locks first
+  await del('slot_locks', `?criado_em=lt.${new Date(Date.now()-30000).toISOString()}`);
+  // Try insert — will fail if already exists (primary key conflict)
+  try {
+    await post('slot_locks', {slot_id: slotId, session_id: SID});
+    return true;
+  } catch {
+    // Check if it's our own lock
+    const existing = await get('slot_locks', `?slot_id=eq.${slotId}&select=session_id`);
+    if(existing?.[0]?.session_id === SID) return true;
+    return false;
+  }
+}
+async function releaseLock(slotId){
+  try { await del('slot_locks', `?slot_id=eq.${slotId}&session_id=eq.${SID}`); } catch{}
+}
+
+// ── Render Prescrição ─────────────────────────────────────────────────────────
+function renderP(){
+  const c=document.getElementById('list-p'); c.innerHTML='';
+  SLOTS.forEach(slot=>{
+    const taken=P[slot.id];
+    const div=document.createElement('div');
+    let cls='slot-card ', badge='', names='', hint='';
+    if(taken){
+      cls+='taken'; badge='<span class="badge taken">Ocupado</span>';
+      names=esc(taken.p1)+' &amp; '+esc(taken.p2);
+    } else {
+      cls+='free'; badge='<span class="badge free">Livre</span>';
+      hint='Toca para reservar';
+    }
+    div.className=cls;
+    div.innerHTML=`<div class="slot-time">${slot.label}</div><div class="slot-body"><div class="slot-names">${names}</div><div class="slot-hint">${hint}</div></div>${badge}`;
+    if(!taken) div.onclick=()=>openP(slot);
+    c.appendChild(div);
+  });
+}
+
+async function openP(slot){
+  // Show optimistic lock UI
+  const card = document.querySelector(`[data-slot="${slot.id}"]`);
+  selSlot=slot;
+  document.getElementById('m-slabel').textContent=slot.label;
+  document.getElementById('m-p1').value='';
+  document.getElementById('m-p2').value='';
+  document.getElementById('ov-p').classList.add('open');
+  clearTimeout(lockTmr);
+  lockTmr=setTimeout(async()=>{
+    await releaseLock(slot.id);
+    closeOv('ov-p');
+    await refresh();
+  },30000);
+}
+
+async function confirmP(){
+  const p1=document.getElementById('m-p1').value.trim();
+  const p2=document.getElementById('m-p2').value.trim();
+  if(!p1||!p2){toast('Preenche os dois nomes!','err');return;}
+  clearTimeout(lockTmr);
+
+  // Re-check freshly from DB
+  const existing = await get('inscricoes_prescricao', `?slot_id=eq.${selSlot.id}&select=slot_id`);
+  if(existing?.length > 0){
+    toast('Slot ocupado! Escolhe outro.','err');
+    closeOv('ov-p'); await refresh(); return;
+  }
+
+  try {
+    await post('inscricoes_prescricao', {slot_id: selSlot.id, p1, p2});
+    P[selSlot.id]={p1,p2};
+    closeOv('ov-p');
+    toast(selSlot.label+' reservado! ✓','ok');
+    renderP();
+  } catch(e) {
+    toast('Erro ao reservar. Tenta de novo.','err');
+  }
+}
+
+// ── Render Outdoor ─────────────────────────────────────────────────────────────
+function renderO(){
+  const c=document.getElementById('list-o'); c.innerHTML='';
+  GROUPS.forEach(g=>{
+    const members=O[g.id]||[];
+    const closed=CLOSED[g.id]||false;
+    const full=members.length>=g.max||closed;
+    const isMember=members.some(m=>m.name&&true); // anyone can close
+    const div=document.createElement('div');
+    div.className='group-card'+(full?' full':'');
+    const chips=Array.from({length:g.max},(_,i)=>{
+      if(members[i]){
+        const m=members[i];
+        return `<span class="chip">${esc(m.name)}<button class="chip-x" onclick="removeO(${m.id},'${g.id}','${escA(m.name)}')">✕</button></span>`;
+      }
+      if(closed) return '<span class="chip empty">—</span>';
+      return '<span class="chip empty">vaga livre</span>';
+    }).join('');
+    const closedBadge=closed?'<span class="badge taken">Fechado</span>':'';
+    const closeBtn=members.length>0&&!closed?`<button class="close-grp-btn" onclick="closeGroup('${g.id}')">🔒 Fechar grupo</button>`:'';
+    const openBtn=closed?`<button class="close-grp-btn" style="border-color:#4ade80;color:#4ade80" onclick="openGroup('${g.id}')">🔓 Reabrir</button>`:'';
+    div.innerHTML=`
+      <div class="group-head">
+        <div><div class="group-title">${g.name} · ${g.time}</div><div class="group-collab">${g.collab}</div></div>
+        <span class="badge ${closed?'taken':full?'taken':'pink'}">${closed?'Fechado':members.length+'/'+g.max}</span>
+      </div>
+      <div class="chips">${chips}${!full&&!closed?`<button class="join-btn" onclick="openO('${g.id}')">+ Entrar</button>`:''}</div>
+      <div style="margin-top:8px">${closeBtn}${openBtn}</div>`;
+    c.appendChild(div);
+  });
+}
+
+function openO(gid){
+  selGrp=gid;
+  const g=GROUPS.find(x=>x.id===gid), members=O[gid]||[];
+  document.getElementById('m-glabel').textContent=`${g.name} · ${g.time}`;
+  document.getElementById('m-ginfo').textContent=`${members.length}/${g.max} inscritos · Insere o teu nome`;
+  document.getElementById('m-oname').value='';
+  document.getElementById('ov-o').classList.add('open');
+}
+
+async function confirmO(){
+  const name=document.getElementById('m-oname').value.trim();
+  if(!name){toast('Insere o teu nome!','err');return;}
+  const g=GROUPS.find(x=>x.id===selGrp);
+  const members=O[selGrp]||[];
+  if(members.length>=g.max){toast('Grupo já cheio!','err');closeOv('ov-o');await refresh();return;}
+  if(members.map(m=>m.name.toLowerCase()).includes(name.toLowerCase())){toast('Nome já inscrito!','err');return;}
+
+  try {
+    const res = await post('inscricoes_outdoor', {grupo_id: selGrp, nome: name});
+    if(!O[selGrp]) O[selGrp]=[];
+    O[selGrp].push({name, id: res?.[0]?.id});
+    closeOv('ov-o');
+    toast(`Inscrito no ${g.name}! ✓`,'ok');
+    renderO();
+  } catch {
+    toast('Erro ao inscrever. Tenta de novo.','err');
+  }
+}
+
+async function removeO(id, gid, name){
+  if(!confirm(`Remover "${name}" do grupo?`))return;
+  try {
+    await del('inscricoes_outdoor', `?id=eq.${id}`);
+    O[gid]=(O[gid]||[]).filter(m=>m.id!==id);
+    toast('Inscrição removida','inf');
+    renderO();
+  } catch {
+    toast('Erro ao remover.','err');
+  }
+}
+
+// ── Utils ─────────────────────────────────────────────────────────────────────
+async function closeGroup(gid){
+  if(!confirm('Fechar este grupo? Ninguém mais poderá entrar.'))return;
+  try{
+    await post('grupos_fechados',{grupo_id:gid});
+    CLOSED[gid]=true;
+    toast('Grupo fechado 🔒','inf');
+    renderO();
+  }catch{toast('Erro ao fechar grupo','err');}
+}
+async function openGroup(gid){
+  if(!confirm('Reabrir este grupo?'))return;
+  try{
+    await del('grupos_fechados',`?grupo_id=eq.${gid}`);
+    delete CLOSED[gid];
+    toast('Grupo reaberto 🔓','ok');
+    renderO();
+  }catch{toast('Erro ao reabrir grupo','err');}
+}
+
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function escA(s){return String(s).replace(/'/g,"\\'");}
+
+function closeOv(id){
+  document.getElementById(id).classList.remove('open');
+  clearTimeout(lockTmr);
+  if(selSlot){releaseLock(selSlot.id);selSlot=null;}
+  selGrp=null;
+}
+
+function switchTab(t){
+  document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('active',['p','o'][i]===t));
+  document.getElementById('panel-p').classList.toggle('active',t==='p');
+  document.getElementById('panel-o').classList.toggle('active',t==='o');
+}
+
+let toastTmr;
+function toast(msg,type){
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.className=`toast ${type} show`;
+  clearTimeout(toastTmr); toastTmr=setTimeout(()=>el.classList.remove('show'),3000);
+}
+
+async function refresh(){
+  await loadAll(); renderP(); renderO();
+}
+
+// Init
+(async()=>{ await loadAll(); renderP(); renderO(); })();
+
+// Auto-refresh a cada 15s
+setInterval(refresh, 15000);
+</script>
+</body>
+</html>
