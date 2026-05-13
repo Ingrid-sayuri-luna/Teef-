@@ -102,7 +102,7 @@ header p{font-size:.68rem;font-weight:500;color:var(--pink);letter-spacing:1.5px
 
 <div id="panel-o" class="panel">
   <div class="stitle">Outdoor Fitness</div>
-  <div class="ssub">📅 Sábado, 20 de junho · Grupos de 3–5 · 12 grupos disponíveis</div>
+  <div class="ssub">📅 Sábado, 20 de junho · 10h início · Break 13h–13h30 · 8 grupos</div>
   <div class="legend">
     <div class="li"><div class="dot" style="background:var(--green)"></div>Com vaga</div>
     <div class="li"><div class="dot" style="background:var(--red)"></div>Cheio/Fechado</div>
@@ -142,18 +142,14 @@ function pad(n){return String(n).padStart(2,'0');}
 const SLOTS=(()=>{const s=[];let h=18,m=30;while(!(h===22&&m===30)){const f=`${pad(h)}h${pad(m)}`;m+=10;if(m>=60){m-=60;h++;}s.push({id:f,label:`${f} – ${pad(h)}h${pad(m)}`});}return s;})();
 
 const GROUPS=[
-  {id:'g1', name:'Grupo 1', time:'9h20–9h50',   collab:'Grupos 2 e 3 colaboram',  max:5},
-  {id:'g2', name:'Grupo 2', time:'10h00–10h30',  collab:'Grupos 1 e 3 colaboram',  max:5},
-  {id:'g3', name:'Grupo 3', time:'10h40–11h10',  collab:'Grupos 1 e 2 colaboram',  max:5},
-  {id:'g4', name:'Grupo 4', time:'11h20–11h50',  collab:'Grupos 5 e 6 colaboram',  max:5},
-  {id:'g5', name:'Grupo 5', time:'12h10–12h50',  collab:'Grupos 4 e 6 colaboram',  max:5},
-  {id:'g6', name:'Grupo 6', time:'13h00–13h30',  collab:'Grupos 4 e 5 colaboram',  max:5},
-  {id:'g7', name:'Grupo 7', time:'13h40–14h10',  collab:'Grupos 7 e 8 colaboram',  max:5},
-  {id:'g8', name:'Grupo 8', time:'14h20–14h50',  collab:'Grupos 7 e 8 colaboram',  max:5},
-  {id:'g9', name:'Grupo 9', time:'15h00–15h30',  collab:'Grupos 9 e 10 colaboram', max:5},
-  {id:'g10',name:'Grupo 10',time:'15h40–16h10',  collab:'Grupos 9 e 10 colaboram', max:5},
-  {id:'g11',name:'Grupo 11',time:'16h20–16h50',  collab:'Grupos 11 e 12 colaboram',max:5},
-  {id:'g12',name:'Grupo 12',time:'17h00–17h30',  collab:'Grupos 11 e 12 colaboram',max:5},
+  {id:'g1',name:'Grupo 1',time:'10h20 – 11h00',collab:'',max:5},
+  {id:'g2',name:'Grupo 2',time:'11h00 – 11h40',collab:'',max:5},
+  {id:'g3',name:'Grupo 3',time:'11h40 – 12h20',collab:'',max:5},
+  {id:'g4',name:'Grupo 4',time:'12h20 – 13h00',collab:'',max:5},
+  {id:'g5',name:'Grupo 5',time:'13h40 – 14h20',collab:'⚠️ Após break 13h–13h30',max:5},
+  {id:'g6',name:'Grupo 6',time:'14h20 – 15h00',collab:'',max:5},
+  {id:'g7',name:'Grupo 7',time:'15h00 – 15h40',collab:'',max:5},
+  {id:'g8',name:'Grupo 8',time:'15h40 – 16h20',collab:'',max:5},
 ];
 
 async function api(method,table,body,params=''){
